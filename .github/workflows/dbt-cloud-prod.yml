@@ -1,0 +1,17 @@
+# .github/workflows/dbt-cloud-prod.yml
+name: Deploy to Production (dbt Cloud)
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  run_dbt_cloud:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger dbt Cloud Job
+        uses: dbt-labs/dbt-cloud-action@v1
+        with:
+          account-id: ${{ secrets.DBT_CLOUD_ACCOUNT_ID }}
+          job-id: ${{ secrets.DBT_CLOUD_JOB_ID }}
+          token: ${{ secrets.DBT_CLOUD_API_KEY }}
