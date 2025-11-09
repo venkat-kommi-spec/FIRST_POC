@@ -1,4 +1,3 @@
-# .github/workflows/dbt-cloud-prod.yml
 name: Deploy to Production (dbt Cloud)
 on:
   push:
@@ -9,9 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Trigger dbt Cloud Job
-        uses: dbt-labs/dbt-cloud-action@v1
-        with:
-          account-id: ${{ secrets.DBT_CLOUD_ACCOUNT_ID }}
-          job-id: ${{ secrets.DBT_CLOUD_JOB_ID }}
-          token: ${{ secrets.DBT_CLOUD_API_KEY }}
+      - name: Trigger dbt Cloud Job via API
+        env:
+          DBT_CLOUD_ACCOUNT_ID: ${{ secrets.DBT_CLOUD_ACCOUNT_ID }}
+          DBT_CLOUD_JOB_ID: ${{ secrets.DBT_CLOUD_JOB_ID }}
+          DBT_CLOUD_API_KEY: ${{ secrets.DBT_CLOUD_API_KEY }}
+        run: |
+          curl -X POST \
+            https://cloud.getdbt.com/api/v2/accounts/$DBT_CLOUD_ACCOUNT_ID/jobs/$DBT_CLOUD_JOB_ID/run/ \
+            -H "Authorization: Token $DBT_CLOUD_API_KEY" \
+            -H "Content-Type: application/json"
